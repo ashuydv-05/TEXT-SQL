@@ -1,0 +1,657 @@
+model,id,difficulty,correct,reason,sql
+NVIDIA Nemotron 3 Ultra Free,1,hard,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,2,hard,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,3,hard,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,4,hard,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,5,hard,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,6,hard,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,7,hard,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,8,hard,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,9,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,10,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,11,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,12,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,13,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,14,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,15,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,16,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,17,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,18,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,19,brutal,False,gen_error,
+NVIDIA Nemotron 3 Ultra Free,20,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,1,hard,False,gen_error,
+OpenAI gpt-oss 20B Free,2,hard,False,gen_error,
+OpenAI gpt-oss 20B Free,3,hard,False,gen_error,
+OpenAI gpt-oss 20B Free,4,hard,False,gen_error,
+OpenAI gpt-oss 20B Free,5,hard,False,gen_error,
+OpenAI gpt-oss 20B Free,6,hard,False,gen_error,
+OpenAI gpt-oss 20B Free,7,hard,False,gen_error,
+OpenAI gpt-oss 20B Free,8,hard,False,gen_error,
+OpenAI gpt-oss 20B Free,9,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,10,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,11,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,12,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,13,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,14,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,15,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,16,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,17,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,18,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,19,brutal,False,gen_error,
+OpenAI gpt-oss 20B Free,20,brutal,False,gen_error,
+Qwen3 Coder,1,hard,True,match,"SELECT CAST(SUM(total_runs) AS FLOAT) / COUNT(DISTINCT match_id) AS average_runs_per_match
+FROM deliveries"
+Qwen3 Coder,2,hard,False,mismatch,"SELECT 
+    batter,
+    ROUND((SUM(CASE WHEN batsman_runs = 4 OR batsman_runs = 6 THEN batsman_runs ELSE 0 END) * 100.0) / SUM(batsman_runs), 2) AS boundary_percentage
+FROM deliveries
+GROUP BY batter
+HAVING SUM(batsman_runs) >= 500
+ORDER BY boundary_percentage DESC
+LIMIT 1"
+Qwen3 Coder,3,hard,True,match,"SELECT COUNT(DISTINCT batter) 
+FROM (
+  SELECT batter, SUM(batsman_runs) as total_runs
+  FROM deliveries
+  GROUP BY batter
+  HAVING SUM(batsman_runs) >= 1000
+) AS players_with_1000_runs"
+Qwen3 Coder,4,hard,False,mismatch,"SELECT bowler, COUNT(*) as ball_count
+FROM deliveries
+WHERE extras_type IS NULL OR extras_type = 'NA'
+GROUP BY bowler
+ORDER BY ball_count DESC
+LIMIT 1"
+Qwen3 Coder,5,hard,True,match,"SELECT batter, SUM(batsman_runs) as total_runs
+FROM deliveries
+GROUP BY match_id, batter
+ORDER BY total_runs DESC
+LIMIT 1"
+Qwen3 Coder,6,hard,False,mismatch,"SELECT winner AS team, COUNT(*) AS wins
+FROM matches m
+JOIN deliveries d ON m.id = d.match_id
+WHERE m.toss_decision = 'field' AND m.winner = m.team2
+   OR m.toss_decision = 'bat' AND m.winner = m.team1
+GROUP BY winner
+ORDER BY wins DESC
+LIMIT 1"
+Qwen3 Coder,7,hard,True,match,"SELECT SUM(total_runs) AS total_powerplay_runs
+FROM deliveries
+WHERE over BETWEEN 0 AND 5"
+Qwen3 Coder,8,hard,True,match,"SELECT batter, SUM(batsman_runs) as total_runs
+FROM deliveries
+WHERE over >= 15 AND over <= 19
+GROUP BY batter
+ORDER BY total_runs DESC
+LIMIT 1"
+Qwen3 Coder,9,brutal,False,mismatch,"SELECT 
+    batter,
+    ROUND((SUM(batsman_runs) * 100.0 / COUNT(*)), 2) AS strike_rate
+FROM deliveries
+WHERE extras_type != 'wides' OR extras_type IS NULL
+GROUP BY batter
+HAVING SUM(batsman_runs) >= 300
+ORDER BY strike_rate DESC
+LIMIT 1"
+Qwen3 Coder,10,brutal,False,mismatch,"SELECT 
+    bowler,
+    CAST(SUM(total_runs) AS FLOAT) / CAST(SUM(CASE WHEN extras_type NOT IN ('wides', 'noballs') THEN 1 ELSE 0 END) AS FLOAT) * 6 AS economy
+FROM deliveries
+WHERE extras_type NOT IN ('wides', 'noballs')
+GROUP BY bowler
+HAVING SUM(CASE WHEN extras_type NOT IN ('wides', 'noballs') THEN 1 ELSE 0 END) >= 1000
+ORDER BY economy ASC
+LIMIT 1"
+Qwen3 Coder,11,brutal,False,mismatch,"SELECT 
+    bowler,
+    CAST(SUM(total_runs) AS FLOAT) / COUNT(*) AS bowling_average
+FROM deliveries
+WHERE is_wicket = 1 
+    AND dismissal_kind NOT IN ('run out', 'retired hurt', 'retired out', 'obstructing the field')
+GROUP BY bowler
+HAVING COUNT(*) >= 30
+ORDER BY bowling_average ASC
+LIMIT 1"
+Qwen3 Coder,12,brutal,False,sql_error,"SELECT season, batting_team AS team, SUM(total_runs) AS runs
+FROM matches m
+JOIN deliveries d ON m.id = d.match_id
+GROUP BY season, batting_team
+ORDER BY season, runs DESC
+GROUP BY season
+ORDER BY season"
+Qwen3 Coder,13,brutal,False,mismatch,"SELECT 
+    batter,
+    CAST(SUM(total_runs) AS FLOAT) / COUNT(DISTINCT match_id) AS average_runs_per_match
+FROM deliveries
+GROUP BY batter
+HAVING COUNT(DISTINCT match_id) >= 30
+ORDER BY average_runs_per_match DESC
+LIMIT 1"
+Qwen3 Coder,14,brutal,False,mismatch,"SELECT winner, target_runs
+FROM matches
+WHERE result = 'runs'
+ORDER BY target_runs DESC
+LIMIT 1"
+Qwen3 Coder,15,brutal,True,match,"SELECT 
+    bowler,
+    COUNT(*) as wicket_count
+FROM deliveries
+WHERE 
+    over >= 15 
+    AND over <= 19
+    AND is_wicket = 1
+    AND dismissal_kind NOT IN ('run out', 'retired hurt', 'retired out', 'obstructing the field')
+GROUP BY bowler
+ORDER BY wicket_count DESC
+LIMIT 1"
+Qwen3 Coder,16,brutal,True,match,"SELECT batter, COUNT(*) as balls_faced
+FROM deliveries
+WHERE batter NOT IN (
+    SELECT DISTINCT player_dismissed 
+    FROM deliveries 
+    WHERE player_dismissed IS NOT NULL
+)
+GROUP BY batter
+ORDER BY balls_faced DESC
+LIMIT 1"
+Qwen3 Coder,17,brutal,False,mismatch,"SELECT 
+    CAST(SUM(CASE 
+        WHEN (toss_winner = winner AND toss_decision = 'field') 
+        THEN 1 
+        ELSE 0 
+    END) AS FLOAT) * 100 / COUNT(*) AS percentage
+FROM matches
+WHERE winner IS NOT NULL"
+Qwen3 Coder,18,brutal,True,match,"SELECT 
+    winner AS team,
+    CAST(COUNT(*) AS FLOAT) * 100 / (
+        SELECT COUNT(*) 
+        FROM matches 
+        WHERE season = '2023' 
+        AND (team1 = m.winner OR team2 = m.winner)
+    ) AS win_percentage
+FROM matches m
+WHERE season = '2023' 
+AND winner IS NOT NULL
+GROUP BY winner
+HAVING COUNT(*) >= 5
+ORDER BY win_percentage DESC
+LIMIT 1"
+Qwen3 Coder,19,brutal,True,match,"SELECT 
+    bowler,
+    player_dismissed AS batter,
+    COUNT(*) AS dismissal_count
+FROM deliveries
+WHERE is_wicket = 1 
+    AND dismissal_kind IS NOT NULL 
+    AND dismissal_kind != 'run out'
+GROUP BY bowler, player_dismissed
+ORDER BY dismissal_count DESC
+LIMIT 1"
+Qwen3 Coder,20,brutal,True,match,"SELECT AVG(first_innings_total) AS average_first_innings_total
+FROM (
+    SELECT m.id, SUM(d.total_runs) AS first_innings_total
+    FROM matches m
+    JOIN deliveries d ON m.id = d.match_id
+    WHERE d.inning = 1
+    AND m.result = 'wickets'
+    AND m.winner != m.team1
+    GROUP BY m.id
+) AS first_innings_totals"
+Claude Sonnet 4.5,1,hard,True,match,"SELECT CAST(SUM(total_runs) AS REAL) / COUNT(DISTINCT match_id) AS avg_runs_per_match
+FROM deliveries"
+Claude Sonnet 4.5,2,hard,False,mismatch,"SELECT 
+    batter,
+    ROUND(100.0 * SUM(CASE WHEN batsman_runs IN (4, 6) THEN batsman_runs ELSE 0 END) / SUM(batsman_runs), 2) AS boundary_percentage
+FROM deliveries
+WHERE batsman_runs > 0
+GROUP BY batter
+HAVING SUM(batsman_runs) >= 500
+ORDER BY boundary_percentage DESC
+LIMIT 1"
+Claude Sonnet 4.5,3,hard,True,match,"SELECT COUNT(*) 
+FROM (
+  SELECT batter, SUM(batsman_runs) as total_runs
+  FROM deliveries
+  GROUP BY batter
+  HAVING SUM(batsman_runs) >= 1000
+)"
+Claude Sonnet 4.5,4,hard,True,match,"SELECT bowler, COUNT(*) as legal_deliveries
+FROM deliveries
+WHERE extras_type IS NULL OR extras_type NOT IN ('wides', 'noballs')
+GROUP BY bowler
+ORDER BY legal_deliveries DESC
+LIMIT 1"
+Claude Sonnet 4.5,5,hard,True,match,"SELECT batter, SUM(batsman_runs) as total_runs
+FROM deliveries
+GROUP BY match_id, batter
+ORDER BY total_runs DESC
+LIMIT 1"
+Claude Sonnet 4.5,6,hard,False,mismatch,"SELECT 
+    m.winner AS team,
+    COUNT(*) AS wins
+FROM matches m
+JOIN deliveries d ON m.id = d.match_id
+WHERE d.inning = 1 
+    AND m.winner IS NOT NULL
+    AND m.winner != d.batting_team
+GROUP BY m.winner
+ORDER BY wins DESC
+LIMIT 1"
+Claude Sonnet 4.5,7,hard,True,match,"SELECT SUM(total_runs) as total_powerplay_runs
+FROM deliveries
+WHERE over >= 0 AND over <= 5"
+Claude Sonnet 4.5,8,hard,True,match,"SELECT 
+    batter,
+    SUM(batsman_runs) as total_runs
+FROM deliveries
+WHERE over >= 15 AND over <= 19
+GROUP BY batter
+ORDER BY total_runs DESC
+LIMIT 1"
+Claude Sonnet 4.5,9,brutal,False,mismatch,"SELECT 
+    batter,
+    ROUND(SUM(batsman_runs) * 100.0 / COUNT(CASE WHEN extras_type != 'wides' OR extras_type IS NULL THEN 1 END), 2) AS strike_rate
+FROM deliveries
+GROUP BY batter
+HAVING SUM(batsman_runs) >= 300
+ORDER BY strike_rate DESC
+LIMIT 1"
+Claude Sonnet 4.5,10,brutal,False,mismatch,"SELECT 
+    bowler,
+    ROUND((SUM(batsman_runs) + SUM(extra_runs)) * 6.0 / COUNT(*), 2) AS economy
+FROM deliveries
+WHERE extras_type IS NULL OR extras_type NOT IN ('wides', 'noballs')
+GROUP BY bowler
+HAVING COUNT(*) >= 1000
+ORDER BY economy ASC
+LIMIT 1"
+Claude Sonnet 4.5,11,brutal,False,mismatch,"SELECT 
+    bowler,
+    ROUND(CAST(SUM(batsman_runs + extra_runs) AS FLOAT) / COUNT(CASE WHEN is_wicket = 1 AND dismissal_kind NOT IN ('run out', 'retired hurt', 'retired out', 'obstructing the field') THEN 1 END), 2) AS bowling_average
+FROM deliveries
+GROUP BY bowler
+HAVING COUNT(CASE WHEN is_wicket = 1 AND dismissal_kind NOT IN ('run out', 'retired hurt', 'retired out', 'obstructing the field') THEN 1 END) >= 30
+ORDER BY bowling_average ASC
+LIMIT 1"
+Claude Sonnet 4.5,12,brutal,True,match,"SELECT 
+    m.season,
+    d.batting_team AS team,
+    SUM(d.total_runs) AS runs
+FROM deliveries d
+JOIN matches m ON d.match_id = m.id
+GROUP BY m.season, d.batting_team
+HAVING SUM(d.total_runs) = (
+    SELECT MAX(total_runs_per_team)
+    FROM (
+        SELECT SUM(d2.total_runs) AS total_runs_per_team
+        FROM deliveries d2
+        JOIN matches m2 ON d2.match_id = m2.id
+        WHERE m2.season = m.season
+        GROUP BY d2.batting_team
+    )
+)
+ORDER BY m.season"
+Claude Sonnet 4.5,13,brutal,True,match,"SELECT 
+    batter,
+    CAST(SUM(batsman_runs) AS REAL) / COUNT(DISTINCT match_id) AS avg_runs_per_match
+FROM deliveries
+GROUP BY batter
+HAVING COUNT(DISTINCT match_id) >= 30
+ORDER BY avg_runs_per_match DESC
+LIMIT 1"
+Claude Sonnet 4.5,14,brutal,True,match,"SELECT 
+    m.winner AS winning_team,
+    SUM(d.total_runs) AS runs
+FROM matches m
+JOIN deliveries d ON m.id = d.match_id
+WHERE d.inning = 2 
+    AND m.winner = d.batting_team
+GROUP BY m.id, m.winner
+ORDER BY runs DESC
+LIMIT 1"
+Claude Sonnet 4.5,15,brutal,True,match,"SELECT bowler, COUNT(*) as wicket_count
+FROM deliveries
+WHERE over BETWEEN 15 AND 19
+  AND is_wicket = 1
+  AND dismissal_kind NOT IN ('run out', 'retired hurt', 'retired out', 'obstructing the field')
+GROUP BY bowler
+ORDER BY wicket_count DESC
+LIMIT 1"
+Claude Sonnet 4.5,16,brutal,True,match,"SELECT 
+    batter,
+    COUNT(*) as balls_faced
+FROM deliveries
+WHERE batter NOT IN (
+    SELECT DISTINCT player_dismissed 
+    FROM deliveries 
+    WHERE player_dismissed IS NOT NULL
+)
+GROUP BY batter
+ORDER BY balls_faced DESC
+LIMIT 1"
+Claude Sonnet 4.5,17,brutal,False,mismatch,"SELECT 
+    ROUND(
+        100.0 * SUM(CASE WHEN toss_winner = winner AND toss_decision = 'field' THEN 1 ELSE 0 END) / COUNT(*),
+        2
+    ) AS percentage
+FROM matches
+WHERE winner IS NOT NULL"
+Claude Sonnet 4.5,18,brutal,False,mismatch,"WITH team_stats AS (
+  SELECT 
+    team,
+    COUNT(*) as matches_played,
+    SUM(CASE WHEN winner = team THEN 1 ELSE 0 END) as wins
+  FROM (
+    SELECT team1 as team, winner FROM matches WHERE season = '2023'
+    UNION ALL
+    SELECT team2 as team, winner FROM matches WHERE season = '2023'
+  )
+  GROUP BY team
+  HAVING matches_played >= 5
+)
+SELECT 
+  team,
+  ROUND(100.0 * wins / matches_played, 2) as win_percentage
+FROM team_stats
+ORDER BY win_percentage DESC
+LIMIT 1"
+Claude Sonnet 4.5,19,brutal,True,match,"SELECT 
+    bowler,
+    player_dismissed AS batter,
+    COUNT(*) AS dismissal_count
+FROM deliveries
+WHERE is_wicket = 1 
+    AND player_dismissed IS NOT NULL
+    AND dismissal_kind IN ('bowled', 'caught', 'lbw', 'stumped', 'caught and bowled', 'hit wicket')
+GROUP BY bowler, player_dismissed
+ORDER BY dismissal_count DESC
+LIMIT 1"
+Claude Sonnet 4.5,20,brutal,True,match,"SELECT AVG(first_innings_total) as average_first_innings_total
+FROM (
+    SELECT 
+        d.match_id,
+        SUM(d.total_runs) as first_innings_total
+    FROM deliveries d
+    JOIN matches m ON d.match_id = m.id
+    WHERE d.inning = 1
+      AND m.result = 'wickets'
+    GROUP BY d.match_id
+)"
+GPT-5.1,1,hard,True,match,"SELECT CAST(SUM(total_runs) AS FLOAT) / COUNT(DISTINCT match_id) AS avg_runs_per_match
+FROM deliveries"
+GPT-5.1,2,hard,True,match,"WITH batter_stats AS (
+  SELECT
+    batter,
+    SUM(batsman_runs) AS total_runs,
+    SUM(CASE WHEN batsman_runs = 4 THEN 4 WHEN batsman_runs = 6 THEN 6 ELSE 0 END) AS boundary_runs
+  FROM deliveries
+  GROUP BY batter
+),
+filtered AS (
+  SELECT
+    batter,
+    total_runs,
+    boundary_runs,
+    CAST(boundary_runs AS REAL) * 100.0 / total_runs AS boundary_pct
+  FROM batter_stats
+  WHERE total_runs >= 500
+)
+SELECT
+  batter,
+  boundary_pct
+FROM filtered
+ORDER BY boundary_pct DESC
+LIMIT 1"
+GPT-5.1,3,hard,True,match,"SELECT COUNT(*) AS num_players
+FROM (
+    SELECT batter, SUM(batsman_runs) AS total_runs
+    FROM deliveries
+    GROUP BY batter
+    HAVING SUM(batsman_runs) >= 1000
+) AS t"
+GPT-5.1,4,hard,False,mismatch,"SELECT
+  bowler,
+  COUNT(*) AS legal_deliveries
+FROM deliveries
+WHERE extras_type NOT IN ('wides', 'wides ', 'no ball', 'no balls', 'noball', 'no_ball')
+   OR extras_type IS NULL
+GROUP BY bowler
+ORDER BY legal_deliveries DESC
+LIMIT 1"
+GPT-5.1,5,hard,True,match,"SELECT
+  batter,
+  SUM(batsman_runs) AS runs
+FROM deliveries
+GROUP BY match_id, batter
+ORDER BY runs DESC
+LIMIT 1"
+GPT-5.1,6,hard,False,sql_error,"SELECT
+    d1.batting_team AS team,
+    COUNT(*) AS wins
+FROM matches m
+JOIN deliveries d1
+  ON m.id = d1.match_id
+ AND d1.inning = 1
+JOIN deliveries d2
+  ON m.id = d2.match_id
+ AND d2.inning = 2
+GROUP BY m.id
+HAVING m.winner = d2.batting_team
+GROUP BY d2.batting_team
+ORDER BY wins DESC
+LIMIT 1"
+GPT-5.1,7,hard,True,match,"SELECT SUM(total_runs) AS total_powerplay_runs
+FROM deliveries
+WHERE over BETWEEN 0 AND 5"
+GPT-5.1,8,hard,True,match,"SELECT
+    batter,
+    SUM(batsman_runs) AS total_runs
+FROM deliveries
+WHERE ""over"" BETWEEN 15 AND 19
+GROUP BY batter
+ORDER BY total_runs DESC
+LIMIT 1"
+GPT-5.1,9,brutal,True,match,"WITH batter_stats AS (
+  SELECT
+    batter,
+    SUM(batsman_runs) AS runs,
+    SUM(
+      CASE
+        WHEN extras_type = 'wides' THEN 0
+        ELSE 1
+      END
+    ) AS legal_balls
+  FROM deliveries
+  GROUP BY batter
+),
+qualified AS (
+  SELECT
+    batter,
+    runs,
+    legal_balls,
+    (CAST(runs AS FLOAT) * 100.0 / NULLIF(legal_balls, 0)) AS strike_rate
+  FROM batter_stats
+  WHERE runs >= 300
+)
+SELECT
+  batter,
+  strike_rate
+FROM qualified
+ORDER BY strike_rate DESC
+LIMIT 1"
+GPT-5.1,10,brutal,False,mismatch,"SELECT
+    d.bowler,
+    ROUND(
+        SUM(d.total_runs - CASE WHEN d.extras_type IN ('wides', 'noballs') THEN d.extra_runs ELSE 0 END)
+        / (COUNT(CASE WHEN d.extras_type NOT IN ('wides', 'noballs') OR d.extras_type IS NULL THEN 1 END) / 6.0),
+        3
+    ) AS economy
+FROM deliveries d
+WHERE d.extras_type IS NULL OR d.extras_type NOT IN ('wides', 'noballs')
+GROUP BY d.bowler
+HAVING COUNT(*) >= 1000
+ORDER BY economy ASC
+LIMIT 1"
+GPT-5.1,11,brutal,True,match,"WITH bowler_stats AS (
+  SELECT
+    bowler,
+    SUM(total_runs) AS runs_conceded,
+    SUM(
+      CASE
+        WHEN is_wicket = 1
+         AND dismissal_kind NOT IN (
+           'run out',
+           'retired hurt',
+           'retired out',
+           'obstructing the field'
+         )
+        THEN 1
+        ELSE 0
+      END
+    ) AS wickets
+  FROM deliveries
+  GROUP BY bowler
+),
+qualified_bowlers AS (
+  SELECT
+    bowler,
+    runs_conceded * 1.0 / wickets AS bowling_average
+  FROM bowler_stats
+  WHERE wickets >= 30
+)
+SELECT
+  bowler,
+  bowling_average
+FROM qualified_bowlers
+ORDER BY bowling_average ASC
+LIMIT 1"
+GPT-5.1,12,brutal,True,match,"WITH season_team_runs AS (
+  SELECT
+    m.season,
+    d.batting_team AS team,
+    SUM(d.total_runs) AS runs
+  FROM deliveries d
+  JOIN matches m ON d.match_id = m.id
+  GROUP BY m.season, d.batting_team
+),
+season_max AS (
+  SELECT
+    season,
+    MAX(runs) AS max_runs
+  FROM season_team_runs
+  GROUP BY season
+)
+SELECT
+  s.season,
+  s.team,
+  s.runs
+FROM season_team_runs s
+JOIN season_max sm
+  ON s.season = sm.season AND s.runs = sm.max_runs
+ORDER BY s.season"
+GPT-5.1,13,brutal,True,match,"SELECT
+    d.batter,
+    CAST(SUM(d.batsman_runs) AS FLOAT) / COUNT(DISTINCT d.match_id) AS avg_runs_per_match
+FROM deliveries d
+GROUP BY d.batter
+HAVING COUNT(DISTINCT d.match_id) >= 30
+ORDER BY avg_runs_per_match DESC
+LIMIT 1"
+GPT-5.1,14,brutal,False,mismatch,"SELECT
+    m.winner AS team,
+    SUM(d.total_runs) AS runs
+FROM matches m
+JOIN deliveries d ON m.id = d.match_id
+WHERE m.result = 'runs'
+  AND m.target_runs IS NOT NULL
+  AND d.inning = 2
+GROUP BY m.id, m.winner
+ORDER BY runs DESC
+LIMIT 1"
+GPT-5.1,15,brutal,True,match,"SELECT
+  bowler,
+  COUNT(*) AS wickets
+FROM deliveries
+WHERE
+  over BETWEEN 15 AND 19
+  AND is_wicket = 1
+  AND dismissal_kind NOT IN ('run out', 'retired hurt', 'retired out', 'obstructing the field')
+GROUP BY bowler
+ORDER BY wickets DESC
+LIMIT 1"
+GPT-5.1,16,brutal,True,match,"WITH dismissed_batters AS (
+  SELECT DISTINCT player_dismissed AS batter
+  FROM deliveries
+  WHERE player_dismissed IS NOT NULL AND player_dismissed != ''
+),
+undismissed_balls AS (
+  SELECT d.batter, COUNT(*) AS balls_faced
+  FROM deliveries d
+  LEFT JOIN dismissed_batters db
+    ON d.batter = db.batter
+  WHERE db.batter IS NULL
+  GROUP BY d.batter
+)
+SELECT batter, balls_faced
+FROM undismissed_balls
+ORDER BY balls_faced DESC
+LIMIT 1"
+GPT-5.1,17,brutal,False,mismatch,"SELECT 
+  ROUND(
+    100.0 * SUM(
+      CASE 
+        WHEN toss_decision = 'field' 
+             AND toss_winner = winner 
+        THEN 1 ELSE 0 
+      END
+    ) / COUNT(*)
+  , 2) AS percentage_toss_winner_field_and_won
+FROM matches"
+GPT-5.1,18,brutal,False,mismatch,"SELECT
+    m.winner AS team,
+    ROUND(100.0 * COUNT(*) * 1.0 / tm.total_matches, 2) AS win_percentage
+FROM matches m
+JOIN (
+    SELECT
+        team,
+        COUNT(*) AS total_matches
+    FROM (
+        SELECT season, team1 AS team FROM matches
+        UNION ALL
+        SELECT season, team2 AS team FROM matches
+    ) t
+    WHERE season = '2023'
+    GROUP BY team
+    HAVING COUNT(*) >= 5
+) tm
+ON m.winner = tm.team
+WHERE m.season = '2023'
+GROUP BY m.winner, tm.total_matches
+ORDER BY win_percentage DESC
+LIMIT 1"
+GPT-5.1,19,brutal,True,match,"SELECT
+  d.bowler,
+  d.batter,
+  COUNT(*) AS dismissals
+FROM deliveries d
+WHERE d.is_wicket = 1
+  AND d.player_dismissed = d.batter
+  AND d.dismissal_kind NOT IN ('run out', 'retired hurt', 'retired out', 'obstructing the field')
+GROUP BY d.bowler, d.batter
+ORDER BY dismissals DESC
+LIMIT 1"
+GPT-5.1,20,brutal,True,match,"SELECT AVG(first_innings_total) AS avg_first_innings_total
+FROM (
+    SELECT
+        m.id AS match_id,
+        CASE
+            WHEN d.batting_team = m.team1 THEN m.team2
+            ELSE m.team1
+        END AS chasing_team,
+        SUM(CASE WHEN d.inning = 1 THEN d.total_runs ELSE 0 END) AS first_innings_total
+    FROM matches m
+    JOIN deliveries d ON m.id = d.match_id
+    GROUP BY m.id
+) t
+JOIN matches m2 ON t.match_id = m2.id AND t.chasing_team = m2.winner"

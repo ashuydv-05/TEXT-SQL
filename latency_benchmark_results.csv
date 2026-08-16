@@ -1,0 +1,61 @@
+model,question_id,latency_ms,generation_success,sql_success,correct,error
+GPT-5.1,1,1637.4,True,True,True,match
+GPT-5.1,2,2197.31,True,True,True,match
+GPT-5.1,3,1097.35,True,True,True,match
+GPT-5.1,4,1789.42,True,True,False,mismatch
+GPT-5.1,5,1494.22,True,True,True,match
+GPT-5.1,6,1418.76,True,True,False,mismatch
+GPT-5.1,7,1266.95,True,True,True,match
+GPT-5.1,8,1741.21,True,True,True,match
+GPT-5.1,9,1865.03,True,True,True,match
+GPT-5.1,10,1487.35,True,True,False,mismatch
+GPT-5.1,11,2506.25,True,True,False,mismatch
+GPT-5.1,12,1814.39,True,True,True,match
+GPT-5.1,13,1511.38,True,True,True,match
+GPT-5.1,14,1669.66,True,True,False,mismatch
+GPT-5.1,15,1278.91,True,True,True,match
+GPT-5.1,16,1487.82,True,True,True,match
+GPT-5.1,17,1150.72,True,True,True,match
+GPT-5.1,18,1789.81,True,True,True,match
+GPT-5.1,19,1851.14,True,True,True,match
+GPT-5.1,20,1964.22,True,True,False,mismatch
+Claude Sonnet 4.5,1,2826.79,True,True,True,match
+Claude Sonnet 4.5,2,4832.04,True,True,False,mismatch
+Claude Sonnet 4.5,3,3744.39,True,True,True,match
+Claude Sonnet 4.5,4,2790.37,True,True,True,match
+Claude Sonnet 4.5,5,2553.93,True,True,True,match
+Claude Sonnet 4.5,6,4846.82,True,True,False,mismatch
+Claude Sonnet 4.5,7,2692.12,True,True,True,match
+Claude Sonnet 4.5,8,2781.73,True,True,True,match
+Claude Sonnet 4.5,9,4594.97,True,True,False,mismatch
+Claude Sonnet 4.5,10,4144.73,True,True,False,mismatch
+Claude Sonnet 4.5,11,4470.88,True,True,False,mismatch
+Claude Sonnet 4.5,12,3323.77,True,True,True,match
+Claude Sonnet 4.5,13,2437.98,True,True,True,match
+Claude Sonnet 4.5,14,4314.46,True,True,True,match
+Claude Sonnet 4.5,15,2496.92,True,True,True,match
+Claude Sonnet 4.5,16,3387.23,True,True,True,match
+Claude Sonnet 4.5,17,3529.64,True,True,False,mismatch
+Claude Sonnet 4.5,18,3206.7,True,True,False,mismatch
+Claude Sonnet 4.5,19,4669.28,True,True,True,match
+Claude Sonnet 4.5,20,3204.91,True,True,True,match
+Qwen3 Coder,1,1182.95,True,True,True,match
+Qwen3 Coder,2,2200.49,True,True,False,mismatch
+Qwen3 Coder,3,2122.99,True,True,True,match
+Qwen3 Coder,4,1350.22,True,True,True,match
+Qwen3 Coder,5,1790.18,True,True,True,match
+Qwen3 Coder,6,1516.7,True,True,False,mismatch
+Qwen3 Coder,7,2088.95,True,True,True,match
+Qwen3 Coder,8,1471.9,True,True,True,match
+Qwen3 Coder,9,1256.0,True,True,False,mismatch
+Qwen3 Coder,10,2186.07,True,True,False,mismatch
+Qwen3 Coder,11,2235.92,True,True,False,mismatch
+Qwen3 Coder,12,2139.66,True,False,False,sql_error
+Qwen3 Coder,13,1427.65,True,True,False,mismatch
+Qwen3 Coder,14,921.73,True,True,True,match
+Qwen3 Coder,15,1441.91,True,True,True,match
+Qwen3 Coder,16,1400.92,True,True,True,match
+Qwen3 Coder,17,1732.88,True,True,False,mismatch
+Qwen3 Coder,18,2969.45,True,True,True,match
+Qwen3 Coder,19,1611.01,True,True,True,match
+Qwen3 Coder,20,2043.34,True,True,True,match

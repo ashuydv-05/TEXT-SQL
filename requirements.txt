@@ -1,0 +1,6 @@
+pandas
+python-dotenv
+openai
+sqlglot
+fastapi
+pydantic
